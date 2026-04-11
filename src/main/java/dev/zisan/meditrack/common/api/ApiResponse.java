@@ -3,6 +3,9 @@ package dev.zisan.meditrack.common.api;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
 import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +13,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 
@@ -17,16 +22,7 @@ public class ApiResponse<T> {
 	private String message;
 	private T data;
 	private String error;
+	@Builder.Default
 	private Instant timestamp = Instant.now();
 	private List<ValidationError> validationErrors;
-
-	public ApiResponse(Integer statusCode, String message, T data, String error,
-			List<ValidationError> validationErrors) {
-		this.statusCode = statusCode;
-		this.message = message;
-		this.data = data;
-		this.error = error;
-		this.validationErrors = validationErrors;
-		this.timestamp = Instant.now();
-	}
 }
