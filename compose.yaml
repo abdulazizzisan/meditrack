@@ -1,22 +1,18 @@
 services:
   elasticsearch:
-    image: 'docker.elastic.co/elasticsearch/elasticsearch:7.17.10'
+    image: 'docker.elastic.co/elasticsearch/elasticsearch:8.15.3'
     environment:
-      - 'ELASTIC_PASSWORD=secret'
       - 'discovery.type=single-node'
       - 'xpack.security.enabled=false'
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
     ports:
-      - '9200'
-      - '9300'
-  ollama:
-    image: 'ollama/ollama:latest'
-    ports:
-      - '11434'
+      - '9200:9200'
+      - '9300:9300'
   postgres:
-    image: 'postgres:latest'
+    image: 'postgres:16.8'
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      - 'POSTGRES_DB=meditrack'
+      - 'POSTGRES_PASSWORD=meditrack'
+      - 'POSTGRES_USER=meditrack'
     ports:
-      - '5432'
+      - '5432:5432'
