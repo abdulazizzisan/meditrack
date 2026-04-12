@@ -16,6 +16,7 @@ import dev.zisan.meditrack.user.entity.User;
 import dev.zisan.meditrack.user.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -94,6 +95,8 @@ public class AuthService {
 			authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(request.email(), request.password())
 			);
+		} catch (DisabledException exception) {
+			throw new BadRequestException("User account is disabled.");
 		} catch (BadCredentialsException exception) {
 			throw new BadRequestException("Invalid email or password.");
 		}

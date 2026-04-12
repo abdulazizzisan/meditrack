@@ -1,6 +1,5 @@
 package dev.zisan.meditrack.security;
 
-import dev.zisan.meditrack.common.exception.ResourceNotFoundException;
 import dev.zisan.meditrack.user.entity.User;
 import dev.zisan.meditrack.user.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userRepository.findByEmail(username)
-			.orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + username));
+			.orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
 
 		return org.springframework.security.core.userdetails.User.builder()
 			.username(user.getEmail())

@@ -55,6 +55,10 @@ public class JwtService {
 		Claims claims = extractAllClaims(token);
 		String tokenType = claims.get(TOKEN_TYPE_CLAIM, String.class);
 		return claims.getSubject().equals(userDetails.getUsername())
+			&& userDetails.isEnabled()
+			&& userDetails.isAccountNonExpired()
+			&& userDetails.isAccountNonLocked()
+			&& userDetails.isCredentialsNonExpired()
 			&& expectedType.equals(tokenType)
 			&& claims.getExpiration().after(new Date());
 	}
