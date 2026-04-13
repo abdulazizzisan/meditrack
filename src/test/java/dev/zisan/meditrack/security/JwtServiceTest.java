@@ -28,7 +28,7 @@ class JwtServiceTest {
 			.email("doctor@example.com")
 			.passwordHash("encoded-password")
 			.fullName("Doctor Example")
-			.role(Role.ROLE_DOCTOR)
+			.role(Role.DOCTOR)
 			.enabled(true)
 			.build();
 

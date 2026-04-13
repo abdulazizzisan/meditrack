@@ -52,7 +52,7 @@ public class AuthService {
 			throw new ConflictException("Email is already in use.");
 		}
 
-		if (request.role() == Role.ROLE_DOCTOR
+		if (request.role() == Role.DOCTOR
 				&& doctorRepository.findByLicenseNumber(request.licenseNumber()).isPresent()) {
 			throw new ConflictException("License number is already in use.");
 		}
@@ -67,7 +67,7 @@ public class AuthService {
 
 		User savedUser = userRepository.save(user);
 
-		if (savedUser.getRole() == Role.ROLE_PATIENT) {
+		if (savedUser.getRole() == Role.PATIENT) {
 			patientRepository.save(Patient.builder()
 				.user(savedUser)
 				.dateOfBirth(request.dateOfBirth())
@@ -78,7 +78,7 @@ public class AuthService {
 				.build());
 		}
 
-		if (savedUser.getRole() == Role.ROLE_DOCTOR) {
+		if (savedUser.getRole() == Role.DOCTOR) {
 			doctorRepository.save(Doctor.builder()
 				.user(savedUser)
 				.specialization(request.specialization())
@@ -152,17 +152,17 @@ public class AuthService {
 	}
 
 	private void validateRegistrationRequest(RegisterRequest request) {
-		if (request.role() == Role.ROLE_ADMIN) {
+		if (request.role() == Role.ADMIN) {
 			throw new BadRequestException("Admin registration is not allowed.");
 		}
 
-		if (request.role() == Role.ROLE_DOCTOR) {
+		if (request.role() == Role.DOCTOR) {
 			if (isBlank(request.specialization()) || isBlank(request.licenseNumber())) {
 				throw new BadRequestException("Doctor registration requires specialization and license number.");
 			}
 		}
 
-		if (request.role() == Role.ROLE_PATIENT && isBlank(request.phone())) {
+		if (request.role() == Role.PATIENT && isBlank(request.phone())) {
 			throw new BadRequestException("Patient registration requires a phone number.");
 		}
 	}

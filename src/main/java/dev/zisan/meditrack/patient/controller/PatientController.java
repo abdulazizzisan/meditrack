@@ -24,7 +24,7 @@ public class PatientController {
 	private final PatientService patientService;
 
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAuthority('ROLE_DOCTOR') or hasAuthority('ROLE_ADMIN') or (hasAuthority('ROLE_PATIENT') and @patientSecurity.isOwner(authentication, #id))")
+	@PreAuthorize("hasAuthority('DOCTOR') or hasAuthority('ADMIN') or (hasAuthority('PATIENT') and @patientSecurity.isOwner(authentication, #id))")
 	public ResponseEntity<ApiResponse<PatientResponse>> getPatient(@PathVariable Long id) {
 		PatientResponse patient = patientService.getPatientById(id);
 
@@ -38,7 +38,7 @@ public class PatientController {
 	}
 
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('ROLE_ADMIN') or (hasAuthority('ROLE_PATIENT') and @patientSecurity.isOwner(authentication, #id))")
+	@PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('PATIENT') and @patientSecurity.isOwner(authentication, #id))")
 	public ResponseEntity<ApiResponse<PatientResponse>> updatePatient(
 			@PathVariable Long id,
 			@Valid @RequestBody UpdatePatientRequest request) {

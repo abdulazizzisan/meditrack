@@ -30,7 +30,7 @@ public class DoctorController {
 	}
 
 	@GetMapping
-	@PreAuthorize("hasAuthority('ROLE_PATIENT') or hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_DOCTOR')")
+	@PreAuthorize("hasAuthority('PATIENT') or hasAuthority('ADMIN') or hasAuthority('DOCTOR')")
 	public ResponseEntity<ApiResponse<Page<DoctorResponse>>> getDoctors(
 			@RequestParam(required = false) String specialization,
 			@PageableDefault(size = 10) Pageable pageable) {
@@ -46,7 +46,7 @@ public class DoctorController {
 	}
 
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAuthority('ROLE_PATIENT') or hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_DOCTOR')")
+	@PreAuthorize("hasAuthority('PATIENT') or hasAuthority('ADMIN') or hasAuthority('DOCTOR')")
 	public ResponseEntity<ApiResponse<DoctorResponse>> getDoctor(@PathVariable Long id) {
 		DoctorResponse doctor = doctorService.getDoctorById(id);
 
@@ -60,7 +60,7 @@ public class DoctorController {
 	}
 
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('ROLE_ADMIN') or (hasAuthority('ROLE_DOCTOR') and @doctorSecurity.isOwner(authentication, #id))")
+	@PreAuthorize("hasAuthority('ADMIN') or (hasAuthority('DOCTOR') and @doctorSecurity.isOwner(authentication, #id))")
 	public ResponseEntity<ApiResponse<DoctorResponse>> updateDoctor(
 			@PathVariable Long id,
 			@Valid @RequestBody UpdateDoctorRequest request) {
