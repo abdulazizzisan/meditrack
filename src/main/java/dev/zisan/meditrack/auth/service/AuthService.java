@@ -4,6 +4,7 @@ import dev.zisan.meditrack.auth.dto.AuthResponse;
 import dev.zisan.meditrack.auth.dto.LoginRequest;
 import dev.zisan.meditrack.auth.dto.RefreshTokenRequest;
 import dev.zisan.meditrack.auth.dto.RegisterRequest;
+import dev.zisan.meditrack.common.aop.Loggable;
 import dev.zisan.meditrack.common.exception.BadRequestException;
 import dev.zisan.meditrack.common.exception.ConflictException;
 import dev.zisan.meditrack.doctor.entity.Doctor;
@@ -45,6 +46,7 @@ public class AuthService {
 	}
 
 	@Transactional
+	@Loggable
 	public AuthResponse register(RegisterRequest request) {
 		validateRegistrationRequest(request);
 
@@ -90,6 +92,7 @@ public class AuthService {
 		return buildAuthResponse(savedUser);
 	}
 
+	@Loggable
 	public AuthResponse login(LoginRequest request) {
 		try {
 			authenticationManager.authenticate(

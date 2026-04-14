@@ -6,6 +6,7 @@ import dev.zisan.meditrack.appointment.dto.UpdateAppointmentStatusRequest;
 import dev.zisan.meditrack.appointment.entity.Appointment;
 import dev.zisan.meditrack.appointment.entity.AppointmentStatus;
 import dev.zisan.meditrack.appointment.repository.AppointmentRepository;
+import dev.zisan.meditrack.common.aop.Loggable;
 import dev.zisan.meditrack.common.exception.BadRequestException;
 import dev.zisan.meditrack.common.exception.ConflictException;
 import dev.zisan.meditrack.common.exception.ResourceNotFoundException;
@@ -39,6 +40,7 @@ public class AppointmentService {
 	}
 
 	@Transactional
+	@Loggable
 	public AppointmentResponse bookAppointment(CreateAppointmentRequest request) {
 		Patient patient = patientRepository.findWithUserById(request.patientId())
 			.orElseThrow(() -> new ResourceNotFoundException("Patient not found with id: " + request.patientId()));
@@ -83,6 +85,7 @@ public class AppointmentService {
 	}
 
 	@Transactional
+	@Loggable
 	public AppointmentResponse updateAppointmentStatus(Long appointmentId, UpdateAppointmentStatusRequest request) {
 		Appointment appointment = loadAppointment(appointmentId);
 
