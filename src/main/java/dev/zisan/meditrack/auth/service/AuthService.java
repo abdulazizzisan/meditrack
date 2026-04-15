@@ -11,10 +11,12 @@ import dev.zisan.meditrack.doctor.entity.Doctor;
 import dev.zisan.meditrack.doctor.repository.DoctorRepository;
 import dev.zisan.meditrack.patient.entity.Patient;
 import dev.zisan.meditrack.patient.repository.PatientRepository;
+import dev.zisan.meditrack.search.service.DoctorSearchIndexService;
 import dev.zisan.meditrack.security.JwtService;
 import dev.zisan.meditrack.user.entity.Role;
 import dev.zisan.meditrack.user.entity.User;
 import dev.zisan.meditrack.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
 	private final UserRepository userRepository;
@@ -33,17 +36,7 @@ public class AuthService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
-
-	public AuthService(UserRepository userRepository, PatientRepository patientRepository,
-			DoctorRepository doctorRepository, PasswordEncoder passwordEncoder,
-			AuthenticationManager authenticationManager, JwtService jwtService) {
-		this.userRepository = userRepository;
-		this.patientRepository = patientRepository;
-		this.doctorRepository = doctorRepository;
-		this.passwordEncoder = passwordEncoder;
-		this.authenticationManager = authenticationManager;
-		this.jwtService = jwtService;
-	}
+	private final DoctorSearchIndexService doctorSearchIndexService;
 
 	@Transactional
 	@Loggable
@@ -81,12 +74,13 @@ public class AuthService {
 		}
 
 		if (savedUser.getRole() == Role.DOCTOR) {
-			doctorRepository.save(Doctor.builder()
+			Doctor doctor = doctorRepository.save(Doctor.builder()
 				.user(savedUser)
 				.specialization(request.specialization())
 				.licenseNumber(request.licenseNumber())
 				.hospitalAffiliation(request.hospitalAffiliation())
 				.build());
+			doctorSearchIndexService.indexDoctorById(doctor.getId());
 		}
 
 		return buildAuthResponse(savedUser);

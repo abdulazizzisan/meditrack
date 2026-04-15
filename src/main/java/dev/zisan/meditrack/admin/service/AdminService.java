@@ -5,23 +5,24 @@ import dev.zisan.meditrack.admin.dto.AdminUserResponse;
 import dev.zisan.meditrack.admin.repository.AdminDashboardJdbcRepository;
 import dev.zisan.meditrack.common.exception.BadRequestException;
 import dev.zisan.meditrack.common.exception.ResourceNotFoundException;
+import dev.zisan.meditrack.doctor.repository.DoctorRepository;
+import dev.zisan.meditrack.search.service.DoctorSearchIndexService;
 import dev.zisan.meditrack.user.entity.User;
 import dev.zisan.meditrack.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class AdminService {
 
 	private final UserRepository userRepository;
 	private final AdminDashboardJdbcRepository adminDashboardJdbcRepository;
-
-	public AdminService(UserRepository userRepository, AdminDashboardJdbcRepository adminDashboardJdbcRepository) {
-		this.userRepository = userRepository;
-		this.adminDashboardJdbcRepository = adminDashboardJdbcRepository;
-	}
+	private final DoctorRepository doctorRepository;
+	private final DoctorSearchIndexService doctorSearchIndexService;
 
 	@Transactional(readOnly = true)
 	public Page<AdminUserResponse> getUsers(Pageable pageable) {
@@ -42,6 +43,7 @@ public class AdminService {
 		}
 
 		user.setEnabled(false);
+		doctorRepository.findByUserId(userId).ifPresent(doctorSearchIndexService::indexDoctor);
 		return mapToAdminUserResponse(user);
 	}
 

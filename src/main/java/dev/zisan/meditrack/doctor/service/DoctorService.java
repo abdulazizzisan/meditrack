@@ -5,19 +5,19 @@ import dev.zisan.meditrack.doctor.dto.DoctorResponse;
 import dev.zisan.meditrack.doctor.dto.UpdateDoctorRequest;
 import dev.zisan.meditrack.doctor.entity.Doctor;
 import dev.zisan.meditrack.doctor.repository.DoctorRepository;
+import dev.zisan.meditrack.search.service.DoctorSearchIndexService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class DoctorService {
 
 	private final DoctorRepository doctorRepository;
-
-	public DoctorService(DoctorRepository doctorRepository) {
-		this.doctorRepository = doctorRepository;
-	}
+	private final DoctorSearchIndexService doctorSearchIndexService;
 
 	@Transactional(readOnly = true)
 	public Page<DoctorResponse> getDoctors(String specialization, Pageable pageable) {
@@ -42,6 +42,7 @@ public class DoctorService {
 		doctor.getUser().setFullName(request.fullName());
 		doctor.setSpecialization(request.specialization());
 		doctor.setHospitalAffiliation(request.hospitalAffiliation());
+		doctorSearchIndexService.indexDoctor(doctor);
 
 		return mapToResponse(doctor);
 	}
