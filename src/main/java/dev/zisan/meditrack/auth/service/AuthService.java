@@ -12,6 +12,7 @@ import dev.zisan.meditrack.doctor.repository.DoctorRepository;
 import dev.zisan.meditrack.patient.entity.Patient;
 import dev.zisan.meditrack.patient.repository.PatientRepository;
 import dev.zisan.meditrack.search.service.DoctorSearchIndexService;
+import dev.zisan.meditrack.search.service.PatientSearchIndexService;
 import dev.zisan.meditrack.security.JwtService;
 import dev.zisan.meditrack.user.entity.Role;
 import dev.zisan.meditrack.user.entity.User;
@@ -37,6 +38,7 @@ public class AuthService {
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
 	private final DoctorSearchIndexService doctorSearchIndexService;
+	private final PatientSearchIndexService patientSearchIndexService;
 
 	@Transactional
 	@Loggable
@@ -63,7 +65,7 @@ public class AuthService {
 		User savedUser = userRepository.save(user);
 
 		if (savedUser.getRole() == Role.PATIENT) {
-			patientRepository.save(Patient.builder()
+			Patient patient = patientRepository.save(Patient.builder()
 				.user(savedUser)
 				.dateOfBirth(request.dateOfBirth())
 				.gender(request.gender())
@@ -71,6 +73,7 @@ public class AuthService {
 				.phone(request.phone())
 				.address(request.address())
 				.build());
+			patientSearchIndexService.indexPatientById(patient.getId());
 		}
 
 		if (savedUser.getRole() == Role.DOCTOR) {

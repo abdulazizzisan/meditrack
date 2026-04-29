@@ -6,7 +6,10 @@ import dev.zisan.meditrack.admin.repository.AdminDashboardJdbcRepository;
 import dev.zisan.meditrack.common.exception.BadRequestException;
 import dev.zisan.meditrack.common.exception.ResourceNotFoundException;
 import dev.zisan.meditrack.doctor.repository.DoctorRepository;
+import dev.zisan.meditrack.patient.repository.PatientRepository;
 import dev.zisan.meditrack.search.service.DoctorSearchIndexService;
+import dev.zisan.meditrack.search.service.MedicationSearchIndexService;
+import dev.zisan.meditrack.search.service.PatientSearchIndexService;
 import dev.zisan.meditrack.user.entity.User;
 import dev.zisan.meditrack.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,9 @@ public class AdminService {
 	private final AdminDashboardJdbcRepository adminDashboardJdbcRepository;
 	private final DoctorRepository doctorRepository;
 	private final DoctorSearchIndexService doctorSearchIndexService;
+	private final PatientRepository patientRepository;
+	private final PatientSearchIndexService patientSearchIndexService;
+	private final MedicationSearchIndexService medicationSearchIndexService;
 
 	@Transactional(readOnly = true)
 	public Page<AdminUserResponse> getUsers(Pageable pageable) {
@@ -44,6 +50,11 @@ public class AdminService {
 
 		user.setEnabled(false);
 		doctorRepository.findByUserId(userId).ifPresent(doctorSearchIndexService::indexDoctor);
+		patientRepository.findByUserId(userId).ifPresent(patient -> {
+			patientSearchIndexService.indexPatient(patient);
+			medicationSearchIndexService.reindexByPatientId(patient.getId());
+		});
+		doctorRepository.findByUserId(userId).ifPresent(doctor -> medicationSearchIndexService.reindexByDoctorId(doctor.getId()));
 		return mapToAdminUserResponse(user);
 	}
 

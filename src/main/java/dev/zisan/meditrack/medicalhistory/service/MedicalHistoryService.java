@@ -9,6 +9,7 @@ import dev.zisan.meditrack.medicalhistory.entity.MedicalHistory;
 import dev.zisan.meditrack.medicalhistory.repository.MedicalHistoryRepository;
 import dev.zisan.meditrack.patient.entity.Patient;
 import dev.zisan.meditrack.patient.repository.PatientRepository;
+import dev.zisan.meditrack.search.service.PatientSearchIndexService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ public class MedicalHistoryService {
 	private final MedicalHistoryRepository medicalHistoryRepository;
 	private final PatientRepository patientRepository;
 	private final DoctorRepository doctorRepository;
+	private final PatientSearchIndexService patientSearchIndexService;
 
 	@Transactional(readOnly = true)
 	public Page<MedicalHistoryResponse> getPatientHistory(Long patientId, Pageable pageable) {
@@ -46,7 +48,9 @@ public class MedicalHistoryService {
 			.visitDate(request.visitDate())
 			.build();
 
-		return toResponse(medicalHistoryRepository.save(medicalHistory));
+		MedicalHistory savedMedicalHistory = medicalHistoryRepository.save(medicalHistory);
+		patientSearchIndexService.indexPatientById(patientId);
+		return toResponse(savedMedicalHistory);
 	}
 
 	private void ensurePatientExists(Long patientId) {

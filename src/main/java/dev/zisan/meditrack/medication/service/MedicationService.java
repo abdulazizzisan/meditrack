@@ -10,6 +10,8 @@ import dev.zisan.meditrack.medication.entity.Medication;
 import dev.zisan.meditrack.medication.repository.MedicationRepository;
 import dev.zisan.meditrack.patient.entity.Patient;
 import dev.zisan.meditrack.patient.repository.PatientRepository;
+import dev.zisan.meditrack.search.service.MedicationSearchIndexService;
+import dev.zisan.meditrack.search.service.PatientSearchIndexService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,9 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MedicationService {
 
+	// Alkaloids, Flavonoids, Tannins, Phenolic Compounds, Saponins, Steroids, Glycosides,
+
 	private final MedicationRepository medicationRepository;
 	private final PatientRepository patientRepository;
 	private final DoctorRepository doctorRepository;
+	private final PatientSearchIndexService patientSearchIndexService;
+	private final MedicationSearchIndexService medicationSearchIndexService;
 
 	@Transactional(readOnly = true)
 	public Page<MedicationResponse> getPatientMedications(Long patientId, Pageable pageable) {
@@ -54,7 +60,10 @@ public class MedicationService {
 			.active(request.active() == null || request.active())
 			.build();
 
-		return toResponse(medicationRepository.save(medication));
+		Medication savedMedication = medicationRepository.save(medication);
+		patientSearchIndexService.indexPatientById(patientId);
+		medicationSearchIndexService.indexMedication(savedMedication);
+		return toResponse(savedMedication);
 	}
 
 	private void ensurePatientExists(Long patientId) {

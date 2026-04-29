@@ -5,6 +5,7 @@ import dev.zisan.meditrack.patient.dto.PatientResponse;
 import dev.zisan.meditrack.patient.dto.UpdatePatientRequest;
 import dev.zisan.meditrack.patient.entity.Patient;
 import dev.zisan.meditrack.patient.repository.PatientRepository;
+import dev.zisan.meditrack.search.service.PatientSearchIndexService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class PatientService {
 
 	private final PatientRepository patientRepository;
+	private final PatientSearchIndexService patientSearchIndexService;
 
-	public PatientService(PatientRepository patientRepository) {
+	public PatientService(PatientRepository patientRepository, PatientSearchIndexService patientSearchIndexService) {
 		this.patientRepository = patientRepository;
+		this.patientSearchIndexService = patientSearchIndexService;
 	}
 
 	@Transactional(readOnly = true)
@@ -33,6 +36,7 @@ public class PatientService {
 		patient.setBloodType(request.bloodType());
 		patient.setPhone(request.phone());
 		patient.setAddress(request.address());
+		patientSearchIndexService.indexPatient(patient);
 
 		return mapToResponse(patient);
 	}
