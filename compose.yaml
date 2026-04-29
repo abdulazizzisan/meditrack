@@ -16,3 +16,7 @@ services:
       - 'POSTGRES_USER=meditrack'
     ports:
       - '5432:5432'
+  ollama:
+    image: 'ollama/ollama:latest'
+    ports:
+      - '11434:11434'

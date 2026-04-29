@@ -22,8 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MedicationService {
 
-	// Alkaloids, Flavonoids, Tannins, Phenolic Compounds, Saponins, Steroids, Glycosides,
-
 	private final MedicationRepository medicationRepository;
 	private final PatientRepository patientRepository;
 	private final DoctorRepository doctorRepository;
